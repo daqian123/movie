@@ -56,7 +56,6 @@ export default {
           let  sh=doc.scrollHeight
           let  ch=document.documentElement.clientHeight
             this.scroll = document.documentElement.scrollTop || document.body.scrollTop;
-            console.log(this.scroll)
             if((sh-ch)%this.scroll==0){
                 this.booleans=true
                 if(this.start==3){
