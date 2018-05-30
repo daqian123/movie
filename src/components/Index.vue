@@ -10,7 +10,7 @@
                   <p>{{item.title}}</p>
               </li>
           </ul>
-          <div  class="loading" v-if="booleans">
+          <div  class="loading" v-if="!booleans">
             正在加载中<img src="../assets/img/loading.gif"/>
           </div>
       </div>
@@ -26,42 +26,38 @@ export default {
     return {
       boolean:true,
       movieList:'',
-      booleans:false,
+      booleans:true,
       start:0,
       count:20
     }
   },
   methods:{
       getHotMovieList(){
-          this.start++
-          api.getHotMovieList({start:this.start,count:20}).then(res=>{
-            if(res.status==200){
-                this.booleans=false
-                this.movieList=this.movieList.concat(res.data.subjects)
+            this.booleans=false
+            api.getHotMovieList({start:this.start,count:20}).then(res=>{
+                if(res.status==200){
+                    this.start++
+                    this.movieList=this.movieList.concat(res.data.subjects)
+                    this.booleans=true
+                }
+                })
             }
-            })
-      }
   },
-  created(){
-      api.getHotMovieList({start:0,count:20}).then(res=>{
+  mounted(){
+        api.getHotMovieList({start:this.start,count:20}).then(res=>{
           if(res.status==200){
               this.boolean=false
+              this.start++
               this.movieList=res.data.subjects
           }
         })
-  },
-  mounted(){
       window.addEventListener('scroll', ()=> {
-          let doc=document.getElementById('movieList')
-          let  sh=doc.scrollHeight
           let  ch=document.documentElement.clientHeight
+          let a=document.querySelectorAll('ul li')
+          let lh=a[a.length-1].offsetTop+a[a.length-1].offsetHeight/2
             this.scroll = document.documentElement.scrollTop || document.body.scrollTop;
-            if((sh-ch)%this.scroll==0){
-                this.booleans=true
-                if(this.start==3){
-                    return false;
-                }
-                this.getHotMovieList()
+            if(lh<=(ch+this.scroll)&&this.booleans){ 
+                    this.getHotMovieList()                  
             }
         })     
   },
